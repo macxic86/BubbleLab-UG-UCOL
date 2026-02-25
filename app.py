@@ -119,16 +119,21 @@ if etapa == "1. Calibración":
 
         st.write(f"{len(images)} imágenes cargadas")
 
+        from PIL import Image
+
+        pil_image = Image.fromarray(image_np).convert("RGB")
+
         canvas_result = st_canvas(
             fill_color="rgba(0, 0, 0, 0)",
             stroke_width=3,
             stroke_color="red",
-            background_image=Image.fromarray(image_np).convert("RGB"),
-            height=image_np.shape[0],
-            width=image_np.shape[1],
+            background_image=pil_image,
+            update_streamlit=True,
+            height=pil_image.height,
+            width=pil_image.width,
             drawing_mode="line",
             key="calibration_canvas"
-        )
+         )
 
         known_distance = st.number_input(
             "Distancia conocida (mm)",
@@ -757,3 +762,4 @@ st.markdown(
     unsafe_allow_html=True
 
 )
+
