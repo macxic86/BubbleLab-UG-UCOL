@@ -119,21 +119,28 @@ if etapa == "1. Calibración":
 
         st.write(f"{len(images)} imágenes cargadas")
 
+        import io
         from PIL import Image
 
         pil_image = Image.fromarray(image_np).convert("RGB")
+
+        # 🔥 Convertir a PNG en memoria (necesario para Streamlit Cloud)
+        buffer = io.BytesIO()
+        pil_image.save(buffer, format="PNG")
+        buffer.seek(0)
+        pil_image_fixed = Image.open(buffer)
 
         canvas_result = st_canvas(
             fill_color="rgba(0, 0, 0, 0)",
             stroke_width=3,
             stroke_color="red",
-            background_image=pil_image,
+            background_image=pil_image_fixed,
             update_streamlit=True,
-            height=pil_image.height,
-            width=pil_image.width,
+            height=pil_image_fixed.height,
+            width=pil_image_fixed.width,
             drawing_mode="line",
             key="calibration_canvas"
-         )
+        )
 
         known_distance = st.number_input(
             "Distancia conocida (mm)",
@@ -143,13 +150,14 @@ if etapa == "1. Calibración":
         if canvas_result.json_data is not None:
             objects = canvas_result.json_data["objects"]
             if len(objects) > 0:
+
                 line = objects[0]
                 x1, y1 = line["x1"], line["y1"]
                 x2, y2 = line["x2"], line["y2"]
 
-                pixel_distance = np.sqrt((x2-x1)**2 + (y2-y1)**2)
+                pixel_distance = np.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
 
-                if known_distance > 0:
+                if known_distance > 0 and pixel_distance > 0:
                     mm_per_pixel = known_distance / pixel_distance
                     st.session_state.mm_per_pixel = mm_per_pixel
                     st.success(f"Calibración: {mm_per_pixel:.6f} mm/pixel")
@@ -164,20 +172,33 @@ elif etapa == "2. ROI":
         st.warning("Primero cargue imagen en calibración.")
     else:
 
+        import io
+        from PIL import Image
+
         image_np = st.session_state.original
+
+        pil_image = Image.fromarray(image_np).convert("RGB")
+
+        # 🔥 Convertir a PNG en memoria (necesario para Streamlit Cloud)
+        buffer = io.BytesIO()
+        pil_image.save(buffer, format="PNG")
+        buffer.seek(0)
+        pil_image_fixed = Image.open(buffer)
 
         canvas_result = st_canvas(
             fill_color="rgba(0, 255, 0, 0.3)",
             stroke_width=2,
             stroke_color="green",
-            background_image=Image.fromarray(image_np).convert("RGB"),
-            height=image_np.shape[0],
-            width=image_np.shape[1],
+            background_image=pil_image_fixed,
+            update_streamlit=True,
+            height=pil_image_fixed.height,
+            width=pil_image_fixed.width,
             drawing_mode="rect",
             key="roi_canvas"
         )
 
         if canvas_result.json_data is not None:
+
             objects = canvas_result.json_data["objects"]
 
             if len(objects) > 0:
@@ -762,4 +783,5 @@ st.markdown(
     unsafe_allow_html=True
 
 )
+
 
