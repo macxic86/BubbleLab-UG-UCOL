@@ -107,7 +107,7 @@ if etapa == "1. Calibración":
         images = []
 
         for file in uploaded_files:
-            img = Image.open(file)
+            img = Image.open(file).convert("RGB")
             images.append(np.array(img))
 
         # 🔹 Guardamos TODAS las imágenes
@@ -123,7 +123,7 @@ if etapa == "1. Calibración":
             fill_color="rgba(0, 0, 0, 0)",
             stroke_width=3,
             stroke_color="red",
-            background_image=Image.fromarray(image_np),
+            background_image=Image.fromarray(image_np).convert("RGB"),
             height=image_np.shape[0],
             width=image_np.shape[1],
             drawing_mode="line",
@@ -165,7 +165,7 @@ elif etapa == "2. ROI":
             fill_color="rgba(0, 255, 0, 0.3)",
             stroke_width=2,
             stroke_color="green",
-            background_image=Image.fromarray(image_np),
+            background_image=Image.fromarray(image_np).convert("RGB"),
             height=image_np.shape[0],
             width=image_np.shape[1],
             drawing_mode="rect",
@@ -755,4 +755,5 @@ st.markdown(
     </div>
     """,
     unsafe_allow_html=True
+
 )
