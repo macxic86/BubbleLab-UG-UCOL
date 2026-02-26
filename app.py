@@ -126,7 +126,7 @@ if etapa == "1. Calibración":
     if uploaded_files:
          # Evento: imágenes cargadas
          if posthog:
-             posthog.capture(st.session_state.user_id, 'image_uploaded')
+            posthog.capture(st.session_state.user_id, 'image_uploaded')
          images = []
 
         for file in uploaded_files:
@@ -808,6 +808,7 @@ st.markdown(
     unsafe_allow_html=True
 
 )
+
 
 
 
