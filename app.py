@@ -191,6 +191,7 @@ if etapa == "1. Calibración":
                     st.session_state.mm_per_pixel = mm_per_pixel
                     st.success(
                         f"Calibración: {mm_per_pixel:.6f} mm/pixel"
+)
 # ===============================
 # ETAPA 2 – ROI
 # ===============================
@@ -814,6 +815,7 @@ st.markdown(
     unsafe_allow_html=True
 
 )
+
 
 
 
