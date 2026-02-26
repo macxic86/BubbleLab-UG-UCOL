@@ -124,20 +124,25 @@ if etapa == "1. Calibración":
     )
 
     if uploaded_files:
-    # Evento: imágenes cargadas
-    if posthog:
-        posthog.capture(st.session_state.user_id, 'image_uploaded')
 
-    images = []
+        # Evento: imágenes cargadas
+        if posthog:
+            posthog.capture(
+                st.session_state.user_id,
+                'image_uploaded',
+                {'num_images': len(uploaded_files)}
+            )
 
-    for file in uploaded_files:
-        img = Image.open(file).convert("RGB")
-        images.append(np.array(img))
+        images = []
 
-        # 🔹 Guardamos TODAS las imágenes
+        for file in uploaded_files:
+            img = Image.open(file).convert("RGB")
+            images.append(np.array(img))
+
+        # Guardamos TODAS las imágenes
         st.session_state.images = images
 
-        # 🔹 Usamos la primera para calibrar
+        # Usamos la primera para calibrar
         image_np = images[0]
         st.session_state.original = image_np
 
@@ -148,7 +153,7 @@ if etapa == "1. Calibración":
 
         pil_image = Image.fromarray(image_np).convert("RGB")
 
-        # 🔥 Convertir a PNG en memoria (necesario para Streamlit Cloud)
+        # Convertir a PNG en memoria
         buffer = io.BytesIO()
         pil_image.save(buffer, format="PNG")
         buffer.seek(0)
@@ -173,19 +178,22 @@ if etapa == "1. Calibración":
 
         if canvas_result.json_data is not None:
             objects = canvas_result.json_data["objects"]
+
             if len(objects) > 0:
 
                 line = objects[0]
                 x1, y1 = line["x1"], line["y1"]
                 x2, y2 = line["x2"], line["y2"]
 
-                pixel_distance = np.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+                pixel_distance = np.sqrt(
+                    (x2 - x1) ** 2 + (y2 - y1) ** 2
+                )
 
                 if known_distance > 0 and pixel_distance > 0:
                     mm_per_pixel = known_distance / pixel_distance
                     st.session_state.mm_per_pixel = mm_per_pixel
-                    st.success(f"Calibración: {mm_per_pixel:.6f} mm/pixel")
-
+                    st.success(
+                        f"Calibración: {mm_per_pixel:.6f} mm/pixel"
 # ===============================
 # ETAPA 2 – ROI
 # ===============================
@@ -809,6 +817,7 @@ st.markdown(
     unsafe_allow_html=True
 
 )
+
 
 
 
