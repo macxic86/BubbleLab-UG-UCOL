@@ -8,7 +8,28 @@ from skimage.feature import peak_local_max
 from skimage.morphology import h_maxima
 from scipy import ndimage as ndi
 
+# === POSTHOG METRICS ===
+import os
+import uuid
+from posthog import Posthog
+
 st.set_page_config(layout="wide")
+
+# Inicializar PostHog
+POSTHOG_API_KEY = os.getenv("POSTHOG_API_KEY")
+
+if POSTHOG_API_KEY:
+    posthog = Posthog(POSTHOG_API_KEY, host='https://us.posthog.com')
+else:
+    posthog = None
+
+# Crear ID único por sesión
+if "user_id" not in st.session_state:
+    st.session_state.user_id = str(uuid.uuid4())
+
+# Evento: App abierta
+if posthog:
+    posthog.capture(st.session_state.user_id, 'app_opened')
 # ===============================
 # HEADER PROFESIONAL INSTITUCIONAL
 # ===============================
@@ -103,7 +124,9 @@ if etapa == "1. Calibración":
     )
 
     if uploaded_files:
-
+         # Evento: imágenes cargadas
+         if posthog:
+             posthog.capture(st.session_state.user_id, 'image_uploaded')
         images = []
 
         for file in uploaded_files:
@@ -352,7 +375,9 @@ elif etapa == "4. Previsualización":
         st.session_state.peak_factor = peak_factor
 
         if st.button("Previsualizar segmentación"):
-
+            # Evento: análisis ejecutado
+            if posthog:
+                posthog.capture(st.session_state.user_id, 'analysis_executed')
             # =============================
             # 🔹 DISTANCE TRANSFORM ROBUSTO
             # =============================
@@ -783,5 +808,6 @@ st.markdown(
     unsafe_allow_html=True
 
 )
+
 
 
