@@ -139,10 +139,7 @@ if etapa == "1. Calibración":
             img = Image.open(file).convert("RGB")
             images.append(np.array(img))
 
-        # Guardamos TODAS las imágenes
         st.session_state.images = images
-
-        # Usamos la primera para calibrar
         image_np = images[0]
         st.session_state.original = image_np
 
@@ -817,6 +814,7 @@ st.markdown(
     unsafe_allow_html=True
 
 )
+
 
 
 
