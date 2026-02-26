@@ -124,14 +124,15 @@ if etapa == "1. Calibración":
     )
 
     if uploaded_files:
-         # Evento: imágenes cargadas
-         if posthog:
-            posthog.capture(st.session_state.user_id, 'image_uploaded')
-         images = []
+    # Evento: imágenes cargadas
+    if posthog:
+        posthog.capture(st.session_state.user_id, 'image_uploaded')
 
-        for file in uploaded_files:
-            img = Image.open(file).convert("RGB")
-            images.append(np.array(img))
+    images = []
+
+    for file in uploaded_files:
+        img = Image.open(file).convert("RGB")
+        images.append(np.array(img))
 
         # 🔹 Guardamos TODAS las imágenes
         st.session_state.images = images
@@ -808,6 +809,7 @@ st.markdown(
     unsafe_allow_html=True
 
 )
+
 
 
 
