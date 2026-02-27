@@ -127,9 +127,9 @@ if etapa == "1. Calibración":
         # Evento: imágenes cargadas
         if posthog:
             posthog.capture(
-                st.session_state.user_id,
-                'image_uploaded',
-                {'num_images': len(uploaded_files)}
+                distinct_id=st.session_state.user_id,
+                event="image_uploaded",
+                properties={"num_images": len(uploaded_files)}
             )
 
         images = []
@@ -383,7 +383,16 @@ elif etapa == "4. Previsualización":
         if st.button("Previsualizar segmentación"):
             # Evento: análisis ejecutado
             if posthog:
-                posthog.capture(st.session_state.user_id, 'analysis_executed')
+                posthog.capture(
+                    distinct_id=st.session_state.user_id,
+                    event="analysis_executed",
+                    properties={
+                        "area_min": area_min,
+                        "area_max": area_max,
+                        "circularity_min": circularidad_min,
+                        "peak_factor": peak_factor
+        }
+    )
             # =============================
             # 🔹 DISTANCE TRANSFORM ROBUSTO
             # =============================
@@ -814,6 +823,7 @@ st.markdown(
     unsafe_allow_html=True
 
 )
+
 
 
 
