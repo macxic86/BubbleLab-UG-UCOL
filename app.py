@@ -13,13 +13,10 @@ import os
 import uuid
 from posthog import Posthog
 
-st.set_page_config(layout="wide")
-
-# Inicializar PostHog
 POSTHOG_API_KEY = os.getenv("POSTHOG_API_KEY")
 
 if POSTHOG_API_KEY:
-    posthog = Posthog(POSTHOG_API_KEY, host='https://us.posthog.com')
+    posthog = Posthog(project_api_key=POSTHOG_API_KEY, host="https://us.posthog.com")
 else:
     posthog = None
 
@@ -29,7 +26,9 @@ if "user_id" not in st.session_state:
 
 # Evento: App abierta
 if posthog:
-    posthog.capture(st.session_state.user_id, 'app_opened')
+    posthog.capture(distinct_id=st.session_state.user_id,
+        event="app_opened",
+        properties={})
 # ===============================
 # HEADER PROFESIONAL INSTITUCIONAL
 # ===============================
@@ -815,6 +814,7 @@ st.markdown(
     unsafe_allow_html=True
 
 )
+
 
 
 
