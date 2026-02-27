@@ -392,7 +392,7 @@ elif etapa == "4. Previsualización":
                         "circularity_min": circularidad_min,
                         "peak_factor": peak_factor
         }
-    )
+        )
             # =============================
             # 🔹 DISTANCE TRANSFORM ROBUSTO
             # =============================
@@ -823,6 +823,7 @@ st.markdown(
     unsafe_allow_html=True
 
 )
+
 
 
 
