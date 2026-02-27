@@ -803,12 +803,27 @@ elif etapa == "6. Resultados":
 
             output.seek(0)
 
-            st.download_button(
+            download_clicked = st.download_button(
                 label="Descargar Excel Completo",
                 data=output,
                 file_name="resultados_burbujas_completo.xlsx",
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             )
+
+            # Evento: descarga de Excel
+            if download_clicked:
+                if posthog:
+                    posthog.capture(
+                        distinct_id=st.session_state.user_id,
+                        event="excel_downloaded",
+                        properties={
+                            "total_bubbles": len(diameters),
+                            "d10": float(d10),
+                            "d50": float(d50),
+                            "d90": float(d90),
+                            "d32": float(d32)
+                        }
+                   )
 # ===============================
 # FOOTER INSTITUCIONAL
 # ===============================
@@ -823,6 +838,7 @@ st.markdown(
     unsafe_allow_html=True
 
 )
+
 
 
 
