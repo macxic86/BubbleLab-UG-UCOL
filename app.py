@@ -75,7 +75,7 @@ with col2:
         """
         <div class="main-header">
             <div class="title-software">
-                ANÁLISIS DE TAMAÑO DE BURBUJAS
+                ANÁLISIS DE TAMAÑO DE BURBUJAS- BUBBLE SIZE MEASUREMENT AND ANALYSIS
             </div>
             <div class="subtitle">
                 Universidad de Guanajuato<br>
@@ -829,7 +829,7 @@ elif etapa == "6. Resultados":
 # ===============================
 
 st.markdown("---")
-st.subheader("📚 Cómo citar este software")
+st.subheader("📚 Cómo citar este software, Citation")
 
 doi_link = "https://doi.org/10.5281/zenodo.18807427"  # ← Ponga aquí su DOI real
 
@@ -859,6 +859,7 @@ st.markdown(
     unsafe_allow_html=True
 
 )
+
 
 
 
