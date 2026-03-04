@@ -825,7 +825,7 @@ elif etapa == "6. Resultados":
                         }
                    )
 # ===============================
-# CÓMO CITAR ESTE SOFTWARE
+# CÓMO CITAR ESTE SOFTWARE, CITATION
 # ===============================
 
 st.markdown("---")
@@ -843,7 +843,7 @@ DOI: [{doi_link}]({doi_link})
 
 st.markdown(citation_text)
 
-st.info("Si utiliza este software en trabajos académicos, favor de citarlo usando el DOI anterior.")
+st.info("Si utiliza este software en trabajos académicos, favor de citarlo usando el DOI anterior. If you use this software in academic publications, please cite it using the DOI above.")
 
 # ===============================
 # FOOTER INSTITUCIONAL
@@ -859,6 +859,7 @@ st.markdown(
     unsafe_allow_html=True
 
 )
+
 
 
 
