@@ -838,7 +838,7 @@ citation_text = f"""
 Dr. Mario Alberto Corona Arroyo & Dr. Valentín Ibarra Galvan  
 Universidad de Guanajuato – Universidad de Colima  
 
-DOI: {doi_link}
+DOI: {https://doi.org/10.5281/zenodo.18807427}
 """
 
 st.markdown(citation_text)
@@ -859,6 +859,7 @@ st.markdown(
     unsafe_allow_html=True
 
 )
+
 
 
 
