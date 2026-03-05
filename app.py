@@ -7,6 +7,22 @@ from PIL import Image
 from skimage.feature import peak_local_max
 from skimage.morphology import h_maxima
 from scipy import ndimage as ndi
+# ===============================
+# FUNCIÓN PARA ESCALAR IMÁGENES GRANDES
+# ===============================
+
+def resize_for_canvas(image, max_width=900):
+
+    h, w = image.shape[:2]
+
+    scale = min(1.0, max_width / w)
+
+    new_w = int(w * scale)
+    new_h = int(h * scale)
+
+    resized = cv2.resize(image, (new_w, new_h))
+
+    return resized, scale
 
 # === POSTHOG METRICS ===
 import os
@@ -109,7 +125,6 @@ etapa = st.sidebar.radio(
      "5. Batch",
      "6. Resultados"]
 )
-
 # ===============================
 # ETAPA 1 – CALIBRACIÓN
 # ===============================
@@ -144,10 +159,18 @@ if etapa == "1. Calibración":
 
         st.write(f"{len(images)} imágenes cargadas")
 
+        # ===============================
+        # ESCALAR IMAGEN PARA CANVAS
+        # ===============================
+
+        display_image, scale = resize_for_canvas(image_np)
+
+        st.session_state.canvas_scale = scale
+
         import io
         from PIL import Image
 
-        pil_image = Image.fromarray(image_np).convert("RGB")
+        pil_image = Image.fromarray(display_image).convert("RGB")
 
         # Convertir a PNG en memoria
         buffer = io.BytesIO()
@@ -155,14 +178,18 @@ if etapa == "1. Calibración":
         buffer.seek(0)
         pil_image_fixed = Image.open(buffer)
 
+        # ===============================
+        # CANVAS
+        # ===============================
+
         canvas_result = st_canvas(
             fill_color="rgba(0, 0, 0, 0)",
             stroke_width=3,
             stroke_color="red",
             background_image=pil_image_fixed,
             update_streamlit=True,
-            height=pil_image_fixed.height,
-            width=pil_image_fixed.width,
+            height=display_image.shape[0],
+            width=display_image.shape[1],
             drawing_mode="line",
             key="calibration_canvas"
         )
@@ -173,24 +200,37 @@ if etapa == "1. Calibración":
         )
 
         if canvas_result.json_data is not None:
+
             objects = canvas_result.json_data["objects"]
 
             if len(objects) > 0:
 
                 line = objects[0]
-                x1, y1 = line["x1"], line["y1"]
-                x2, y2 = line["x2"], line["y2"]
+
+                x1 = line["x1"]
+                y1 = line["y1"]
+                x2 = line["x2"]
+                y2 = line["y2"]
+
+                # ===============================
+                # CORREGIR ESCALA
+                # ===============================
+
+                scale = st.session_state.canvas_scale
 
                 pixel_distance = np.sqrt(
                     (x2 - x1) ** 2 + (y2 - y1) ** 2
-                )
+                ) / scale
 
                 if known_distance > 0 and pixel_distance > 0:
+
                     mm_per_pixel = known_distance / pixel_distance
+
                     st.session_state.mm_per_pixel = mm_per_pixel
+
                     st.success(
                         f"Calibración: {mm_per_pixel:.6f} mm/pixel"
-)
+                    )
 # ===============================
 # ETAPA 2 – ROI
 # ===============================
@@ -206,13 +246,25 @@ elif etapa == "2. ROI":
 
         image_np = st.session_state.original
 
-        pil_image = Image.fromarray(image_np).convert("RGB")
+        # ===============================
+        # ESCALAR IMAGEN PARA CANVAS
+        # ===============================
 
-        # 🔥 Convertir a PNG en memoria (necesario para Streamlit Cloud)
+        display_image, scale = resize_for_canvas(image_np)
+
+        st.session_state.canvas_scale = scale
+
+        pil_image = Image.fromarray(display_image).convert("RGB")
+
+        # Convertir a PNG en memoria (necesario para Streamlit Cloud)
         buffer = io.BytesIO()
         pil_image.save(buffer, format="PNG")
         buffer.seek(0)
         pil_image_fixed = Image.open(buffer)
+
+        # ===============================
+        # CANVAS ROI
+        # ===============================
 
         canvas_result = st_canvas(
             fill_color="rgba(0, 255, 0, 0.3)",
@@ -220,8 +272,8 @@ elif etapa == "2. ROI":
             stroke_color="green",
             background_image=pil_image_fixed,
             update_streamlit=True,
-            height=pil_image_fixed.height,
-            width=pil_image_fixed.width,
+            height=display_image.shape[0],
+            width=display_image.shape[1],
             drawing_mode="rect",
             key="roi_canvas"
         )
@@ -233,21 +285,27 @@ elif etapa == "2. ROI":
             if len(objects) > 0:
 
                 rect = objects[0]
-                x = int(rect["left"])
-                y = int(rect["top"])
-                w = int(rect["width"])
-                h = int(rect["height"])
+
+                scale = st.session_state.canvas_scale
+
+                # ===============================
+                # CORREGIR ESCALA DE COORDENADAS
+                # ===============================
+
+                x = int(rect["left"] / scale)
+                y = int(rect["top"] / scale)
+                w = int(rect["width"] / scale)
+                h = int(rect["height"] / scale)
 
                 roi = image_np[y:y+h, x:x+w]
 
-                # 🔹 Guardar ROI
+                # Guardar ROI
                 st.session_state.roi = roi
 
-                # 🔹 Guardar coordenadas para batch
+                # Guardar coordenadas para batch
                 st.session_state.roi_coords = (x, y, x+w, y+h)
 
                 st.image(roi, caption="ROI seleccionada")
-
 # ===============================
 # ETAPA 3 - AJUSTES
 # ===============================
@@ -859,6 +917,7 @@ st.markdown(
     unsafe_allow_html=True
 
 )
+
 
 
 
