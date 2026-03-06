@@ -923,7 +923,7 @@ st.markdown("""
 [Download User Manual (English)](https://github.com/macxic86/BubbleLab-UG-UCOL/blob/main/BubbleLab_User_Manual_EN.pdf)
 
 🇪🇸 **Manual en Español**  
-[Descargar Manual de Usuario (Español)](https://raw.github.com/macxic86/BubbleLab-UG-UCOL/blob/main/BubbleLab_User_Manual_ES.pdf)
+[Descargar Manual de Usuario (Español)](https://github.com/macxic86/BubbleLab-UG-UCOL/blob/main/BubbleLab_User_Manual_ES.pdf)
 """)
 
 # -------- DATOS DE EJEMPLO --------
@@ -978,6 +978,7 @@ st.markdown(
     unsafe_allow_html=True
 
 )
+
 
 
 
